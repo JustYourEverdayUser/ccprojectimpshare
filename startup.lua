@@ -35,7 +35,7 @@ Commands = {
     {command = "ls", desc = CH.ls},
     {command = "alarm [reason]", desc = CH.alarm},
     {command = "sos", desc = CH.sos},
-    {commadn = "edit <filename.ext>", desc = CH.edit}
+    {command = "edit <filename.ext>", desc = CH.edit}
 }
 
 function Main()
@@ -133,7 +133,7 @@ function HasExtension(path, ext)
 end
 
 function Cd(file)
-    local path = nil
+    local path
     if file ~= nil then
         path = fs.combine(shell.dir(),file)
         if fs.isDir(path) then
@@ -199,8 +199,17 @@ function Run()
     io.write(User.."@"..shell.dir().."> ")
     local input = io.read("l")
     local tokens = Split_input(input)
-    local command = tokens[1]
-    local arg = tokens[2]
+    local command, arg
+    if tokens then command = tokens[1] end
+    if tokens then arg = tokens[2]
+        for i in ipairs(tokens) do
+            if i == 1 or i == 2 then
+            else arg = arg.." "..tokens[i]
+            end
+            print("ran",tokens[i])
+        end
+    end
+    print(command, arg)
     if command == "help" then
         Help(arg)
     elseif command == "cd" then
