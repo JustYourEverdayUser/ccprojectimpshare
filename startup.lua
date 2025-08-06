@@ -206,7 +206,6 @@ function Run()
             if i == 1 or i == 2 then
             else arg = arg.." "..tokens[i]
             end
-            print("ran",tokens[i])
         end
     end
     print(command, arg)
