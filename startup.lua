@@ -46,17 +46,6 @@ function Main()
     until false
 end
 
-function PB_Frame(current, total, bar_length)
-    bar_length = bar_length or 50
-    local percent = current / total
-    local hashes = math.floor(percent * bar_length)
-    local spaces = bar_length - hashes
-
-    io.write("\r[", string.rep("#", hashes), string.rep(" ", spaces), "] ",
-        string.format("%.1f%%", (percent * 100 - math.random())))
-    io.flush()
-end
-
 function Split_input(entry)
     local words = {}
     for word in string.gmatch(entry, "%S+") do
@@ -64,24 +53,6 @@ function Split_input(entry)
     end
     return words
 end
-
-function PB_Fail(fail_point)
-    for i = 1, fail_point do
-        PB_Frame(i, 100, 10)
-        A = (math.random() / 2)
-        os.execute("sleep " .. A)
-    end
-end
-
-function PB_Succeed()
-    for i = 1, 100 do
-        PB_Frame(i, 100, 10)
-        A = (math.random() / 2)
-        os.execute("sleep " .. A)
-    end
-    PB_Frame(100, 100, 10)
-end
-
 
 function SignIn(RUser,RPass)
     while true do
@@ -101,6 +72,10 @@ function SignIn(RUser,RPass)
         elseif User == "anonymous" then
             print("Welcome, anonymous.")
             break
+        --[[
+            elseif User == "dev" then
+            shell.setDir("root/Projects/Project Imposter [Ongoing]/POV's/Jeremy")
+            break--]]
         else print("Unknown username. Enter \"anonymous\" for guest access.")
         end
     end
@@ -144,13 +119,25 @@ function Cd(file)
         elseif HasExtension(file,"txt") then
             shell.run("clear")
             local files = fs.open(path,"r")
-            local num = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18}
-            local line
+            local line, overflow
             repeat
-                for i in ipairs(num) do
+                local i = 1
+                if overflow ~= nil then
+                    line = overflow
+                    i = i + (math.floor(#line/51)+1); print(line)
+                    overflow = nil
+                end
+                while i <= 18 do
                     line = files.readLine()
-                    if line ~= nil then print(line)
-                    else break
+                    if line == nil then break
+                    elseif line:sub(1,1) == "-" and i ~= 1 then
+                        overflow = line; break
+                    elseif #line > 51 then
+                        if i+math.floor(#line/51)+1 > 18 then
+                            overflow = line; break
+                        else i = i + (math.floor(#line/51)+1); print(line)
+                        end
+                    else i = i + 1; print(line)
                     end
                 end
                 io.write("> ")
